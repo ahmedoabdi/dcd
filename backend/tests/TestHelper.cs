@@ -357,6 +357,9 @@ public static class TestHelper
         {
             Assert.Equal(expected.Name, actual.Name);
 
+            CompareCosts(expected.CostProfile, actual.CostProfile);
+            Assert.Equal(expected.CostProfile.Exploration.Name,
+                actual.CostProfile.Exploration.Name);
             CompareCosts(expected.GAndGAdminCost,
                 actual.GAndGAdminCost);
             Assert.Equal(expected.GAndGAdminCost.Exploration.Name,
@@ -403,6 +406,7 @@ public static class TestHelper
             Assert.Equal(expected.ProjectId, actual.ProjectId);
             Assert.Equal(expected.Name, actual.Name);
 
+            CompareCosts(expected.CostProfile, actual.CostProfile);
             CompareCosts(expected.GAndGAdminCost, actual.GAndGAdminCost);
 
             Assert.Equal(expected.RigMobDemob, actual.RigMobDemob);
@@ -476,6 +480,8 @@ public static class TestHelper
         Assert.Equal(expected.PluggingAndAbandonment,
             actual.PluggingAndAbandonment);
         Assert.Equal(expected.ArtificialLift, actual.ArtificialLift);
+        CompareCosts(expected.CostProfile,
+            actual.CostProfile);
     }
 
     public static void CompareWellProjects(WellProject expected, WellProjectDto actual)
@@ -494,6 +500,8 @@ public static class TestHelper
         Assert.Equal(expected.PluggingAndAbandonment,
             actual.PluggingAndAbandonment);
         Assert.Equal(expected.ArtificialLift, actual.ArtificialLift);
+        CompareCosts(expected.CostProfile,
+            actual.CostProfile);
     }
 
     public static void CompareWellProjects(WellProjectDto expected, WellProject actual)
@@ -517,6 +525,8 @@ public static class TestHelper
         Assert.Equal(expected.PluggingAndAbandonment,
             actual.PluggingAndAbandonment);
         Assert.Equal(expected.ArtificialLift, actual.ArtificialLift);
+        CompareCosts(expected.CostProfile,
+            actual.CostProfile);
     }
 
     public static void CompareTopsides(Topside expected, Topside actual)
