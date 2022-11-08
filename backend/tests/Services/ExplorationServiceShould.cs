@@ -86,7 +86,7 @@ public class ExplorationServiceShould : IDisposable
 
         var deletedExplorationId = project.Explorations.First().Id;
         // Act
-        var projectResult = explorationService.DeleteExploration(deletedExplorationId);
+        var projectResult = explorationService.DeleteExploration(deletedExplorationId).Result;
 
         // Assert
         var actualExploration = projectResult.DrainageStrategies.FirstOrDefault(o => o.Name == ExplorationToDelete.Name);
@@ -108,7 +108,9 @@ public class ExplorationServiceShould : IDisposable
         var project = fixture.context.Projects.FirstOrDefault();
         var sourceCaseId = project.Cases.FirstOrDefault().Id;
         var oldExploration = CreateTestExploration(project);
-        var oldId = explorationService.CreateExploration(ExplorationDtoAdapter.Convert(oldExploration), sourceCaseId).Explorations.Last().Id;
+        var oldId = explorationService.CreateExploration(ExplorationDtoAdapter.Convert(oldExploration), sourceCaseId)
+            .GetAwaiter().GetResult()
+            .Explorations.Last().Id;
 
         var updatedExploration = CreateUpdatedTestExploration(project, oldId);
 

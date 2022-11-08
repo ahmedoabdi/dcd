@@ -1,15 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using api.Adapters;
 using api.Models;
 using api.SampleData.Builders;
-using api.SampleData.Generators;
 using api.Services;
 
 using Xunit;
-
 
 namespace tests;
 
@@ -61,7 +55,8 @@ public class TransportServiceShould
         var expectedTransport = CreateTestTransport(project);
 
         // Act
-        var projectResult = transportService.CreateTransport(TransportDtoAdapter.Convert(expectedTransport), caseId);
+        var projectResult = transportService.CreateTransport(TransportDtoAdapter.Convert(expectedTransport), caseId)
+            .GetAwaiter().GetResult();
 
         // Assert
         var actualTransport = projectResult.Transports.FirstOrDefault(o => o.Name == expectedTransport.Name);
@@ -83,7 +78,9 @@ public class TransportServiceShould
         var expectedTransport = CreateTestTransport(new Project { Id = new Guid() });
 
         // Act, assert
-        Assert.Throws<NotFoundInDBException>(() => transportService.CreateTransport(TransportDtoAdapter.Convert(expectedTransport), caseId));
+        Assert.Throws<NotFoundInDBException>(() =>
+            transportService.CreateTransport(TransportDtoAdapter.Convert(expectedTransport), caseId).GetAwaiter()
+                .GetResult());
     }
 
     [Fact]
@@ -97,7 +94,9 @@ public class TransportServiceShould
         var expectedTransport = CreateTestTransport(project);
 
         // Act, assert
-        Assert.Throws<NotFoundInDBException>(() => transportService.CreateTransport(TransportDtoAdapter.Convert(expectedTransport), new Guid()));
+        Assert.Throws<NotFoundInDBException>(() =>
+            transportService.CreateTransport(TransportDtoAdapter.Convert(expectedTransport), new Guid()).GetAwaiter()
+                .GetResult());
     }
 
     [Fact]
@@ -113,12 +112,12 @@ public class TransportServiceShould
         fixture.context.Cases.Add(new Case
         {
             Project = project,
-            TransportLink = transportToDelete.Id
+            TransportLink = transportToDelete.Id,
         });
         fixture.context.SaveChanges();
 
         // Act
-        var projectResult = transportService.DeleteTransport(transportToDelete.Id);
+        var projectResult = transportService.DeleteTransport(transportToDelete.Id).GetAwaiter().GetResult();
 
         // Assert
         var actualTransport = projectResult.Transports.FirstOrDefault(o => o.Name == transportToDelete.Name);
@@ -143,7 +142,8 @@ public class TransportServiceShould
         transportService.DeleteTransport(transportToDelete.Id);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => transportService.DeleteTransport(transportToDelete.Id));
+        Assert.Throws<ArgumentException>(() =>
+            transportService.DeleteTransport(transportToDelete.Id).GetAwaiter().GetResult());
     }
 
     [Fact]
@@ -179,17 +179,17 @@ public class TransportServiceShould
             ProjectId = project.Id,
             GasExportPipelineLength = 100,
             OilExportPipelineLength = 100,
-        }.WithCostProfile(new TransportCostProfile()
+        }.WithCostProfile(new TransportCostProfile
         {
             Currency = Currency.USD,
             StartYear = 2030,
-            Values = new double[] { 23.4, 28.9, 24.3 }
+            Values = new[] { 23.4, 28.9, 24.3 },
         })
-            .WithTransportCessationCostProfile(new TransportCessationCostProfile()
+            .WithTransportCessationCostProfile(new TransportCessationCostProfile
             {
                 Currency = Currency.USD,
                 StartYear = 2030,
-                Values = new double[] { 17.4, 17.9, 37.3 }
+                Values = new[] { 17.4, 17.9, 37.3 },
             });
     }
 
@@ -208,7 +208,8 @@ public class TransportServiceShould
         updatedTransport.Id = new Guid();
 
         // Act, assert
-        Assert.Throws<ArgumentException>(() => transportService.UpdateTransport(TransportDtoAdapter.Convert(updatedTransport)));
+        Assert.Throws<AggregateException>(() =>
+            transportService.UpdateTransport(TransportDtoAdapter.Convert(updatedTransport)));
     }
 
     private static Transport CreateTestTransport(Project project)
@@ -220,18 +221,17 @@ public class TransportServiceShould
             ProjectId = project.Id,
             GasExportPipelineLength = 999,
             OilExportPipelineLength = 999,
-
-        }.WithCostProfile(new TransportCostProfile()
+        }.WithCostProfile(new TransportCostProfile
         {
             Currency = Currency.USD,
             StartYear = 2030,
-            Values = new double[] { 13.4, 18.9, 34.3 }
+            Values = new[] { 13.4, 18.9, 34.3 },
         })
-            .WithTransportCessationCostProfile(new TransportCessationCostProfile()
+            .WithTransportCessationCostProfile(new TransportCessationCostProfile
             {
                 Currency = Currency.USD,
                 StartYear = 2030,
-                Values = new double[] { 13.4, 18.9, 34.3 }
+                Values = new[] { 13.4, 18.9, 34.3 },
             });
     }
 }
