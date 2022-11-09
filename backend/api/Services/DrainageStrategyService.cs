@@ -66,7 +66,7 @@ public class DrainageStrategyService
 
     public DrainageStrategyDto CopyDrainageStrategy(Guid drainageStrategyId, Guid sourceCaseId)
     {
-        var source = GetDrainageStrategy(drainageStrategyId);
+        var source = GetDrainageStrategy(drainageStrategyId).Result;
         var unit = _projectService.GetProject(source.ProjectId).PhysicalUnit;
 
         var newDrainageStrategyDto = DrainageStrategyDtoAdapter.Convert(source, unit);
@@ -108,7 +108,7 @@ public class DrainageStrategyService
             newDrainageStrategyDto.ImportedElectricity.Id = Guid.Empty;
         }
 
-        var drainageStrategy = NewCreateDrainageStrategy(newDrainageStrategyDto, sourceCaseId);
+        var drainageStrategy = NewCreateDrainageStrategy(newDrainageStrategyDto, sourceCaseId).Result;
         var dto = DrainageStrategyDtoAdapter.Convert(drainageStrategy, unit);
 
         return dto;

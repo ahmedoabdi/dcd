@@ -35,7 +35,7 @@ public class TopsideService
 
     public TopsideDto CopyTopside(Guid topsideId, Guid sourceCaseId)
     {
-        var source = GetTopside(topsideId);
+        var source = GetTopside(topsideId).Result;
         var newTopsideDto = TopsideDtoAdapter.Convert(source);
         newTopsideDto.Id = Guid.Empty;
         if (newTopsideDto.CostProfile != null)
@@ -47,7 +47,7 @@ public class TopsideService
             newTopsideDto.CessationCostProfile.Id = Guid.Empty;
         }
 
-        var topside = NewCreateTopside(newTopsideDto, sourceCaseId);
+        var topside = NewCreateTopside(newTopsideDto, sourceCaseId).Result;
         var dto = TopsideDtoAdapter.Convert(topside);
 
         return dto;

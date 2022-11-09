@@ -49,7 +49,7 @@ public class TransportService
 
     public TransportDto CopyTransport(Guid transportId, Guid sourceCaseId)
     {
-        var source = GetTransport(transportId);
+        var source = GetTransport(transportId).Result;
         var newTransportDto = TransportDtoAdapter.Convert(source);
         newTransportDto.Id = Guid.Empty;
         if (newTransportDto.CostProfile != null)
@@ -61,7 +61,7 @@ public class TransportService
             newTransportDto.CessationCostProfile.Id = Guid.Empty;
         }
 
-        var topside = NewCreateTransport(newTransportDto, sourceCaseId);
+        var topside = NewCreateTransport(newTransportDto, sourceCaseId).Result;
         var dto = TransportDtoAdapter.Convert(topside);
 
         return dto;

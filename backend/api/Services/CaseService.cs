@@ -134,7 +134,7 @@ public class CaseService
         var wellProjectWellService = _serviceProvider.GetRequiredService<WellProjectWellService>();
         var explorationWellService = _serviceProvider.GetRequiredService<ExplorationWellService>();
 
-        var caseItem = GetCase(caseId);
+        var caseItem = GetCase(caseId).Result;
         var sourceWellProjectId = caseItem.WellProjectLink;
         var sourceExplorationId = caseItem.ExplorationLink;
         caseItem.Id = new Guid();

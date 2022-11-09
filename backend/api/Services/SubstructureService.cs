@@ -58,7 +58,7 @@ public class SubstructureService
 
     public SubstructureDto CopySubstructure(Guid substructureId, Guid sourceCaseId)
     {
-        var source = GetSubstructure(substructureId);
+        var source = GetSubstructure(substructureId).Result;
         var newSubstructureDto = SubstructureDtoAdapter.Convert(source);
         newSubstructureDto.Id = Guid.Empty;
         if (newSubstructureDto.CostProfile != null)
@@ -70,7 +70,7 @@ public class SubstructureService
             newSubstructureDto.CessationCostProfile.Id = Guid.Empty;
         }
 
-        var topside = NewCreateSubstructure(newSubstructureDto, sourceCaseId);
+        var topside = NewCreateSubstructure(newSubstructureDto, sourceCaseId).Result;
         var dto = SubstructureDtoAdapter.Convert(topside);
 
         return dto;

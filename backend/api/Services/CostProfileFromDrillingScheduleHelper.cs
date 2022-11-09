@@ -65,10 +65,10 @@ public class CostProfileFromDrillingScheduleHelper
     public ExplorationDto UpdateExplorationCostProfilesForCase(Guid caseId)
     {
         var caseService = _serviceProvider.GetRequiredService<CaseService>();
-        var caseItem = caseService.GetCase(caseId);
+        var caseItem = caseService.GetCase(caseId).Result;
 
         var explorationService = _serviceProvider.GetRequiredService<ExplorationService>();
-        var exploration = explorationService.GetExploration(caseItem.ExplorationLink);
+        var exploration = explorationService.GetExploration(caseItem.ExplorationLink).Result;
 
         var explorationWellService = _serviceProvider.GetRequiredService<ExplorationWellService>();
         var explorationWells = explorationWellService.GetAll().Where(ew => ew.ExplorationId == exploration.Id);
@@ -140,10 +140,10 @@ public class CostProfileFromDrillingScheduleHelper
     public WellProjectDto UpdateWellProjectCostProfilesForCase(Guid caseId)
     {
         var caseService = _serviceProvider.GetRequiredService<CaseService>();
-        var caseItem = caseService.GetCase(caseId);
+        var caseItem = caseService.GetCase(caseId).Result;
 
         var wellProjectService = _serviceProvider.GetRequiredService<WellProjectService>();
-        var wellProject = wellProjectService.GetWellProject(caseItem.WellProjectLink);
+        var wellProject = wellProjectService.GetWellProject(caseItem.WellProjectLink).Result;
 
         var wellProjectWellService = _serviceProvider.GetRequiredService<WellProjectWellService>();
         var wellProjectWells = wellProjectWellService.GetAll().Where(ew => ew.WellProjectId == wellProject.Id);

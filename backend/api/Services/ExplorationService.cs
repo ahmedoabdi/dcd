@@ -70,7 +70,7 @@ public class ExplorationService
             newExplorationDto.GAndGAdminCost.Id = Guid.Empty;
         }
 
-        var wellProject = NewCreateExploration(newExplorationDto, sourceCaseId);
+        var wellProject = NewCreateExploration(newExplorationDto, sourceCaseId).Result;
         var dto = ExplorationDtoAdapter.Convert(wellProject);
 
         return dto;
