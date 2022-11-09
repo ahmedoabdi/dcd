@@ -123,7 +123,7 @@ public class GenerateStudyCostProfile
         {
             firstYearPercentage
         };
-        for (var i = dg2.Year + 1; i < dg3.Year; i++)
+        for (int i = dg2.Year + 1; i < dg3.Year; i++)
         {
             var days = DateTime.IsLeapYear(i) ? 366 : 365;
             var percentage = days / (double)totalDays;

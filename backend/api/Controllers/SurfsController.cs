@@ -1,4 +1,6 @@
+using api.Adapters;
 using api.Dtos;
+using api.Models;
 using api.Services;
 
 using Api.Authorization;
@@ -57,4 +59,5 @@ public class SurfsController : ControllerBase
     {
         return await _surfService.DeleteSurf(surfId);
     }
+
 }

@@ -10,14 +10,14 @@ namespace api.Services;
 public class SurfService
 {
     private readonly DcdDbContext _context;
-    private readonly ILogger<SurfService> _logger;
     private readonly ProjectService _projectService;
-
+    private readonly ILogger<SurfService> _logger;
     public SurfService(DcdDbContext context, ProjectService projectService, ILoggerFactory loggerFactory)
     {
         _context = context;
         _projectService = projectService;
         _logger = loggerFactory.CreateLogger<SurfService>();
+
     }
 
     public IEnumerable<Surf> GetSurfs(Guid projectId)
@@ -67,7 +67,6 @@ public class SurfService
         {
             _context.SurfCessationCostProfiles!.Remove(existing.CessationCostProfile);
         }
-
         existing.LastChangedDate = DateTimeOffset.Now;
         _context.Surfs!.Update(existing);
         _context.SaveChanges();

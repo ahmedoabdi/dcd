@@ -124,7 +124,7 @@ public class WellProjectServiceShould : IDisposable
         fixture.context.SaveChanges();
 
         // Act
-        var projectResult = wellProjectService.DeleteWellProject(wellProjectToDelete.Id);
+        var projectResult = wellProjectService.DeleteWellProject(wellProjectToDelete.Id).GetAwaiter().GetResult();
 
         // Assert
         var actualWellProject = projectResult.WellProjects.FirstOrDefault(o => o.Name == wellProjectToDelete.Name);
