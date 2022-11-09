@@ -182,6 +182,27 @@ public class ExplorationService
         return ExplorationDtoAdapter.Convert(updatedExploration.Entity);
     }
 
+    public ExplorationDto[] UpdateMultiple(ExplorationDto[] updatedExplorationDtos)
+    {
+        var updatedExplorationDtoList = new List<ExplorationDto>();
+        foreach (var explorationDto in updatedExplorationDtos)
+        {
+            var updatedExplorationDto = UpdateSingleExploration(explorationDto);
+            updatedExplorationDtoList.Add(updatedExplorationDto);
+        }
+
+        _context.SaveChanges();
+        return updatedExplorationDtoList.ToArray();
+    }
+
+    public ExplorationDto UpdateSingleExploration(ExplorationDto updatedExplorationDto)
+    {
+        var existing = GetExploration(updatedExplorationDto.Id).Result;
+        ExplorationAdapter.ConvertExisting(existing, updatedExplorationDto);
+        var exploration = _context.Explorations!.Update(existing);
+        return ExplorationDtoAdapter.Convert(exploration.Entity);
+    }
+
     public async Task<Exploration> GetExploration(Guid explorationId)
     {
         var exploration = await _context.Explorations!

@@ -46,7 +46,7 @@ public class WellService
 
     public WellDto UpdateExistingWell(WellDto updatedWellDto)
     {
-        var existing = GetWell(updatedWellDto.Id);
+        var existing = GetWell(updatedWellDto.Id).Result;
         WellAdapter.ConvertExisting(existing, updatedWellDto);
 
         var well = _context.Wells!.Update(existing);
