@@ -38,7 +38,7 @@ public class WellProjectService
 
     public WellProjectDto CopyWellProject(Guid wellProjectId, Guid sourceCaseId)
     {
-        var source = GetWellProject(wellProjectId);
+        var source = GetWellProject(wellProjectId).Result;
         var newWellProjectDto = WellProjectDtoAdapter.Convert(source);
         newWellProjectDto.Id = Guid.Empty;
         if (newWellProjectDto.OilProducerCostProfile != null)
@@ -58,7 +58,7 @@ public class WellProjectService
             newWellProjectDto.GasInjectorCostProfile.Id = Guid.Empty;
         }
 
-        var wellProject = NewCreateWellProject(newWellProjectDto, sourceCaseId);
+        var wellProject = NewCreateWellProject(newWellProjectDto, sourceCaseId).Result;
         var dto = WellProjectDtoAdapter.Convert(wellProject);
 
         return dto;

@@ -35,7 +35,7 @@ public class SurfService
 
     public SurfDto CopySurf(Guid surfId, Guid sourceCaseId)
     {
-        var source = GetSurf(surfId);
+        var source = GetSurf(surfId).Result;
         var newSurfDto = SurfDtoAdapter.Convert(source);
         newSurfDto.Id = Guid.Empty;
         if (newSurfDto.CostProfile != null)
@@ -47,7 +47,7 @@ public class SurfService
             newSurfDto.CessationCostProfile.Id = Guid.Empty;
         }
 
-        var surf = NewCreateSurf(newSurfDto, sourceCaseId);
+        var surf = NewCreateSurf(newSurfDto, sourceCaseId).Result;
         var dto = SurfDtoAdapter.Convert(surf);
 
         return dto;

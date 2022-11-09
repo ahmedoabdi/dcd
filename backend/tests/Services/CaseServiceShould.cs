@@ -38,8 +38,6 @@ public class CaseShould : IDisposable
         var loggerFactory = new LoggerFactory();
         var project = fixture.context.Projects.FirstOrDefault();
         var actual = CreateCase(project);
-        var projectService = new ProjectService(fixture.context, loggerFactory);
-        var caseService = new
         ProjectService projectService = new ProjectService(fixture.context, loggerFactory, _serviceProvider);
         CaseService caseService = new
             CaseService(fixture.context, projectService, loggerFactory, _serviceProvider);

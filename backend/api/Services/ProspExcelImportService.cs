@@ -471,7 +471,7 @@ public class ProspExcelImportService
 
     public void ClearImportedProspData(Guid sourceCaseId, Guid projectId)
     {
-        var caseItem = _caseService.GetCase(sourceCaseId);
+        var caseItem = _caseService.GetCase(sourceCaseId).Result;
         caseItem.SharepointFileId = null;
         caseItem.SharepointFileName = null;
         caseItem.SharepointFileUrl = null;

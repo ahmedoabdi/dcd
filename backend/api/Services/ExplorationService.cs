@@ -42,7 +42,7 @@ public class ExplorationService
 
     public ExplorationDto CopyExploration(Guid explorationId, Guid sourceCaseId)
     {
-        var source = GetExploration(explorationId);
+        var source = GetExploration(explorationId).Result;
         var newExplorationDto = ExplorationDtoAdapter.Convert(source);
         newExplorationDto.Id = Guid.Empty;
         if (newExplorationDto.ExplorationWellCostProfile != null)
@@ -70,7 +70,7 @@ public class ExplorationService
             newExplorationDto.GAndGAdminCost.Id = Guid.Empty;
         }
 
-        var wellProject = NewCreateExploration(newExplorationDto, sourceCaseId);
+        var wellProject = NewCreateExploration(newExplorationDto, sourceCaseId).Result;
         var dto = ExplorationDtoAdapter.Convert(wellProject);
 
         return dto;
