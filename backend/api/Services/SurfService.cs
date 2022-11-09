@@ -20,14 +20,14 @@ public class SurfService
         _logger = loggerFactory.CreateLogger<SurfService>();
     }
 
-    public IEnumerable<Surf> GetSurfs(Guid projectId)
+    public async Task<IEnumerable<Surf>> GetSurfs(Guid projectId)
     {
         if (_context.Surfs != null)
         {
-            return _context.Surfs
+            return await _context.Surfs
                 .Include(c => c.CostProfile)
                 .Include(c => c.CessationCostProfile)
-                .Where(c => c.Project.Id.Equals(projectId));
+                .Where(c => c.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<Surf>();

@@ -20,14 +20,14 @@ public class TopsideService
         _logger = loggerFactory.CreateLogger<TopsideService>();
     }
 
-    public IEnumerable<Topside> GetTopsides(Guid projectId)
+    public async Task<IEnumerable<Topside>> GetTopsides(Guid projectId)
     {
         if (_context.Topsides != null)
         {
-            return _context.Topsides
+            return await _context.Topsides
                 .Include(c => c.CostProfile)
                 .Include(c => c.CessationCostProfile)
-                .Where(c => c.Project.Id.Equals(projectId));
+                .Where(c => c.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<Topside>();

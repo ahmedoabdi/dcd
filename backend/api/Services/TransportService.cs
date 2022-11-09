@@ -113,14 +113,14 @@ public class TransportService
         }
     }
 
-    public IEnumerable<Transport> GetTransports(Guid projectId)
+    public async Task<IEnumerable<Transport>> GetTransports(Guid projectId)
     {
         if (_context.Transports != null)
         {
-            return _context.Transports
+            return await _context.Transports
                 .Include(c => c.CostProfile)
                 .Include(c => c.CessationCostProfile)
-                .Where(c => c.Project.Id.Equals(projectId));
+                .Where(c => c.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<Transport>();

@@ -193,14 +193,22 @@ public class ProjectService
 
     private Project AddAssetsToProject(Project project)
     {
-        project.WellProjects = _wellProjectService.GetWellProjects(project.Id).ToList();
-        project.DrainageStrategies = _drainageStrategyService.GetDrainageStrategies(project.Id).ToList();
-        project.Surfs = _surfService.GetSurfs(project.Id).ToList();
-        project.Substructures = _substructureService.GetSubstructures(project.Id).ToList();
-        project.Topsides = _topsideService.GetTopsides(project.Id).ToList();
-        project.Transports = _transportService.GetTransports(project.Id).ToList();
-        project.Explorations = _explorationService.GetExplorations(project.Id).ToList();
-        project.Wells = _wellService.GetWells(project.Id).ToList();
+        var wellProjects = _wellProjectService.GetWellProjects(project.Id);
+        var drainageStrategies = _drainageStrategyService.GetDrainageStrategies(project.Id);
+        var surfs = _surfService.GetSurfs(project.Id);
+        var substructures = _substructureService.GetSubstructures(project.Id);
+        var topsides = _topsideService.GetTopsides(project.Id);
+        var transports = _transportService.GetTransports(project.Id);
+        var explorations = _explorationService.GetExplorations(project.Id);
+        var wells = _wellService.GetWells(project.Id);
+        project.WellProjects = wellProjects.Result.ToList();
+        project.DrainageStrategies = drainageStrategies.Result.ToList();
+        project.Surfs = surfs.Result.ToList();
+        project.Substructures = substructures.Result.ToList();
+        project.Topsides = topsides.Result.ToList();
+        project.Transports = transports.Result.ToList();
+        project.Explorations = explorations.Result.ToList();
+        project.Wells = wells.Result.ToList();
         return project;
     }
 }

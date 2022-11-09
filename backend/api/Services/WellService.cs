@@ -116,7 +116,7 @@ public class WellService
 
     public IEnumerable<WellDto> GetDtosForProject(Guid projectId)
     {
-        var wells = GetWells(projectId);
+        var wells = GetWells(projectId).Result;
         var wellsDtos = new List<WellDto>();
         foreach (var well in wells)
         {
@@ -126,12 +126,12 @@ public class WellService
         return wellsDtos;
     }
 
-    public IEnumerable<Well> GetWells(Guid projectId)
+    public async Task<IEnumerable<Well>> GetWells(Guid projectId)
     {
         if (_context.Wells != null)
         {
-            return _context.Wells
-                .Where(d => d.ProjectId.Equals(projectId));
+            return await _context.Wells
+                .Where(d => d.ProjectId.Equals(projectId)).ToListAsync();
         }
 
         return new List<Well>();

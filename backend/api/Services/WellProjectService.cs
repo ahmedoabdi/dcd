@@ -20,17 +20,17 @@ public class WellProjectService
         _logger = loggerFactory.CreateLogger<WellProjectService>();
     }
 
-    public IEnumerable<WellProject> GetWellProjects(Guid projectId)
+    public async Task<IEnumerable<WellProject>> GetWellProjects(Guid projectId)
     {
         if (_context.WellProjects != null)
         {
-            return _context.WellProjects
+            return await _context.WellProjects
                 .Include(c => c.OilProducerCostProfile)
                 .Include(c => c.GasProducerCostProfile)
                 .Include(c => c.WaterInjectorCostProfile)
                 .Include(c => c.GasInjectorCostProfile)
                 .Include(c => c.WellProjectWells!).ThenInclude(wpw => wpw.DrillingSchedule)
-                .Where(d => d.Project.Id.Equals(projectId));
+                .Where(d => d.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<WellProject>();

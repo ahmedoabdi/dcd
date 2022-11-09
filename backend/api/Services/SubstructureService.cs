@@ -20,14 +20,14 @@ public class SubstructureService
         _logger = loggerFactory.CreateLogger<SubstructureService>();
     }
 
-    public IEnumerable<Substructure> GetSubstructures(Guid projectId)
+    public async Task<IEnumerable<Substructure>> GetSubstructures(Guid projectId)
     {
         if (_context.Substructures != null)
         {
-            return _context.Substructures
+            return await _context.Substructures
                 .Include(c => c.CostProfile)
                 .Include(c => c.CessationCostProfile)
-                .Where(c => c.Project.Id.Equals(projectId));
+                .Where(c => c.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<Substructure>();

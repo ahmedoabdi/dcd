@@ -20,11 +20,11 @@ public class DrainageStrategyService
         _logger = loggerFactory.CreateLogger<DrainageStrategyService>();
     }
 
-    public IEnumerable<DrainageStrategy> GetDrainageStrategies(Guid projectId)
+    public async Task<IEnumerable<DrainageStrategy>> GetDrainageStrategies(Guid projectId)
     {
         if (_context.DrainageStrategies != null)
         {
-            return _context.DrainageStrategies
+            return await _context.DrainageStrategies
                 .Include(c => c.ProductionProfileOil)
                 .Include(c => c.ProductionProfileGas)
                 .Include(c => c.ProductionProfileWater)
@@ -33,7 +33,7 @@ public class DrainageStrategyService
                 .Include(c => c.NetSalesGas)
                 .Include(c => c.Co2Emissions)
                 .Include(c => c.ProductionProfileNGL)
-                .Where(d => d.Project.Id.Equals(projectId));
+                .Where(d => d.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<DrainageStrategy>();

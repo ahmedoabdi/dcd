@@ -23,14 +23,14 @@ public class GenerateFuelFlaringLossesProfile
     public async Task<FuelFlaringAndLossesDto> Generate(Guid caseId)
     {
         var caseItem = await _caseService.GetCase(caseId);
-        var topside = await _topsideService.GetTopside(caseItem.TopsideLink);
         var project = _projectService.GetProject(caseItem.ProjectId);
-        var drainageStrategy = await _drainageStrategyService.GetDrainageStrategy(caseItem.DrainageStrategyLink);
+        var topside = _topsideService.GetTopside(caseItem.TopsideLink);
+        var drainageStrategy = _drainageStrategyService.GetDrainageStrategy(caseItem.DrainageStrategyLink);
         var fuelConsumptions =
-            EmissionCalculationHelper.CalculateTotalFuelConsumptions(caseItem, topside,
-                drainageStrategy);
-        var flarings = EmissionCalculationHelper.CalculateFlaring(drainageStrategy);
-        var losses = EmissionCalculationHelper.CalculateLosses(drainageStrategy);
+            EmissionCalculationHelper.CalculateTotalFuelConsumptions(caseItem, topside.Result,
+                drainageStrategy.Result);
+        var flarings = EmissionCalculationHelper.CalculateFlaring(drainageStrategy.Result);
+        var losses = EmissionCalculationHelper.CalculateLosses(drainageStrategy.Result);
 
         var totalProfile =
             TimeSeriesCost.MergeCostProfiles(TimeSeriesCost.MergeCostProfiles(fuelConsumptions, flarings), losses);

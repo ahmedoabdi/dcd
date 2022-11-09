@@ -22,11 +22,11 @@ public class ExplorationService
         _logger = loggerFactory.CreateLogger<ExplorationService>();
     }
 
-    public IEnumerable<Exploration> GetExplorations(Guid projectId)
+    public async Task<IEnumerable<Exploration>> GetExplorations(Guid projectId)
     {
         if (_context.Explorations != null)
         {
-            return _context.Explorations
+            return await _context.Explorations
                 .Include(c => c.ExplorationWellCostProfile)
                 .Include(c => c.AppraisalWellCostProfile)
                 .Include(c => c.SidetrackCostProfile)
@@ -34,7 +34,7 @@ public class ExplorationService
                 .Include(c => c.SeismicAcquisitionAndProcessing)
                 .Include(c => c.CountryOfficeCost)
                 .Include(c => c.ExplorationWells!).ThenInclude(ew => ew.DrillingSchedule)
-                .Where(d => d.Project.Id.Equals(projectId));
+                .Where(d => d.Project.Id.Equals(projectId)).ToListAsync();
         }
 
         return new List<Exploration>();
