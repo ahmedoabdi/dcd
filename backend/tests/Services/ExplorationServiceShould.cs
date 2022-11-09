@@ -131,7 +131,7 @@ public class ExplorationServiceShould : IDisposable
             Name = "Test-exploration-23",
             Project = project,
             ProjectId = project.Id,
-            RigMobDemob = 32.7
+            RigMobDemob = 32.7,
         }
                 .WithGAndGAdminCost(new GAndGAdminCost()
                 {
@@ -151,7 +151,7 @@ public class ExplorationServiceShould : IDisposable
             Name = "Test-exploration-23",
             Project = project,
             ProjectId = project.Id,
-            RigMobDemob = 32.7
+            RigMobDemob = 32.7,
         }
                 .WithGAndGAdminCost(new GAndGAdminCost()
                 {

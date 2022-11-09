@@ -107,7 +107,7 @@ public class CaseShould : IDisposable
         var projectService = new ProjectService(fixture.context, loggerFactory, _serviceProvider);
         var caseService = new CaseService(fixture.context, projectService, loggerFactory, _serviceProvider);
 
-        Assert.Throws<NotFoundInDBException>(() => caseService.DeleteCase(new Guid()));
+        Assert.Throws<NotFoundInDBException>(() => caseService.DeleteCase(new Guid()).GetAwaiter().GetResult());
     }
 
     // [Fact]

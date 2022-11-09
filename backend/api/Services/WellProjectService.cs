@@ -140,27 +140,6 @@ public class WellProjectService
         return WellProjectDtoAdapter.Convert(updatedWellProject.Entity);
     }
 
-    public WellProjectDto[] UpdateMultiple(WellProjectDto[] updatedWellProjectDtos)
-    {
-        var updatedWellProjectDtoList = new List<WellProjectDto>();
-        foreach (var wellProjectDto in updatedWellProjectDtos)
-        {
-            var updatedWellProjectDto = UpdateSingleWellProject(wellProjectDto);
-            updatedWellProjectDtoList.Add(updatedWellProjectDto);
-        }
-
-        _context.SaveChanges();
-        return updatedWellProjectDtoList.ToArray();
-    }
-
-    public WellProjectDto UpdateSingleWellProject(WellProjectDto updatedWellProjectDto)
-    {
-        var existing = GetWellProject(updatedWellProjectDto.Id);
-        WellProjectAdapter.ConvertExisting(existing, updatedWellProjectDto);
-        var wellProject = _context.WellProjects!.Update(existing);
-        return WellProjectDtoAdapter.Convert(wellProject.Entity);
-    }
-
     public async Task<WellProject> GetWellProject(Guid wellProjectId)
     {
         var wellProject = await _context.WellProjects!

@@ -140,7 +140,8 @@ public class ExplorationService
             _context.GAndGAdminCost!.Remove(existing.GAndGAdminCost);
         }
 
-        if (updatedExplorationDto.SeismicAcquisitionAndProcessing == null && existing.SeismicAcquisitionAndProcessing != null)
+        if (updatedExplorationDto.SeismicAcquisitionAndProcessing == null &&
+            existing.SeismicAcquisitionAndProcessing != null)
         {
             _context.SeismicAcquisitionAndProcessing!.Remove(existing.SeismicAcquisitionAndProcessing);
         }
@@ -165,7 +166,8 @@ public class ExplorationService
             _context.GAndGAdminCost!.Remove(existing.GAndGAdminCost);
         }
 
-        if (updatedExplorationDto.SeismicAcquisitionAndProcessing == null && existing.SeismicAcquisitionAndProcessing != null)
+        if (updatedExplorationDto.SeismicAcquisitionAndProcessing == null &&
+            existing.SeismicAcquisitionAndProcessing != null)
         {
             _context.SeismicAcquisitionAndProcessing!.Remove(existing.SeismicAcquisitionAndProcessing);
         }
@@ -179,28 +181,6 @@ public class ExplorationService
         _context.SaveChanges();
         return ExplorationDtoAdapter.Convert(updatedExploration.Entity);
     }
-
-    public ExplorationDto[] UpdateMultiple(ExplorationDto[] updatedExplorationDtos)
-    {
-        var updatedExplorationDtoList = new List<ExplorationDto>();
-        foreach (var explorationDto in updatedExplorationDtos)
-        {
-            var updatedExplorationDto = UpdateSingleExploration(explorationDto);
-            updatedExplorationDtoList.Add(updatedExplorationDto);
-        }
-
-        _context.SaveChanges();
-        return updatedExplorationDtoList.ToArray();
-    }
-
-    public ExplorationDto UpdateSingleExploration(ExplorationDto updatedExplorationDto)
-    {
-        var existing = GetExploration(updatedExplorationDto.Id).Result;
-        ExplorationAdapter.ConvertExisting(existing, updatedExplorationDto);
-        var exploration = _context.Explorations!.Update(existing);
-        return ExplorationDtoAdapter.Convert(exploration.Entity);
-    }
-
 
     public async Task<Exploration> GetExploration(Guid explorationId)
     {

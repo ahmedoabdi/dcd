@@ -12,8 +12,8 @@ namespace api.Services;
 public class CaseService
 {
     private readonly DcdDbContext _context;
-    private readonly ProjectService _projectService;
     private readonly ILogger<CaseService> _logger;
+    private readonly ProjectService _projectService;
     private readonly IServiceProvider _serviceProvider;
 
     public CaseService(DcdDbContext context, ProjectService projectService, ILoggerFactory loggerFactory,
@@ -32,6 +32,7 @@ public class CaseService
         {
             case_.DG4Date = new DateTimeOffset(2030, 1, 1, 0, 0, 0, 0, new GregorianCalendar(), TimeSpan.Zero);
         }
+
         var project = _projectService.GetProject(case_.ProjectId);
         case_.Project = project;
         _context.Cases!.Add(case_);
@@ -119,7 +120,7 @@ public class CaseService
         return _projectService.GetProjectDto(project.Id);
     }
 
-    public ProjectDto DuplicateCase(Guid caseId)
+    public async Task<ProjectDto> DuplicateCase(Guid caseId)
     {
         var drainageStrategyService = _serviceProvider.GetRequiredService<DrainageStrategyService>();
 
@@ -159,7 +160,7 @@ public class CaseService
         wellProjectWellService.CopyWellProjectWell(sourceWellProjectId, newWellProject.Id);
         explorationWellService.CopyExplorationWell(sourceExplorationId, newExploration.Id);
 
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return _projectService.GetProjectDto(project.Id);
     }
 
@@ -195,7 +196,7 @@ public class CaseService
             .FirstOrDefaultAsync(c => c.Id == caseId);
         if (caseItem == null)
         {
-            throw new NotFoundInDBException($"Case {caseId} not found.");
+            throw new NotFoundInDBException($"Case {caseId} not found");
         }
 
         return caseItem;
