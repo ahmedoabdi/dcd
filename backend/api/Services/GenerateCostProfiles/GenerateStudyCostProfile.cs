@@ -36,12 +36,17 @@ public class GenerateStudyCostProfile
         {
             return new StudyCostProfileDto();
         }
+
         var cost = TimeSeriesCost.MergeCostProfiles(feasibility, feed);
-        if (cost == null) { return new StudyCostProfileDto(); }
+        if (cost == null)
+        {
+            return new StudyCostProfileDto();
+        }
+
         var studyCost = new StudyCostProfile
         {
             StartYear = cost.StartYear,
-            Values = cost.Values
+            Values = cost.Values,
         };
         var dto = CaseDtoAdapter.Convert(studyCost);
         return dto;
@@ -49,7 +54,7 @@ public class GenerateStudyCostProfile
 
     public TimeSeries<double> CalculateTotalFeasibilityAndConceptStudies(Guid caseId)
     {
-        var caseItem = _caseService.GetCase(caseId);
+        var caseItem = _caseService.GetCase(caseId).Result;
 
         var sumFacilityCost = SumAllCostFacility(caseId);
         var sumWellCost = SumWellCost(caseId);
@@ -85,7 +90,7 @@ public class GenerateStudyCostProfile
         var feasibilityAndConceptStudiesCost = new TimeSeries<double>
         {
             StartYear = dg0.Year - caseItem.DG4Date.Year,
-            Values = valuesList.ToArray()
+            Values = valuesList.ToArray(),
         };
 
         return feasibilityAndConceptStudiesCost;
@@ -93,7 +98,7 @@ public class GenerateStudyCostProfile
 
     public TimeSeries<double> CalculateTotalFEEDStudies(Guid caseId)
     {
-        var caseItem = _caseService.GetCase(caseId);
+        var caseItem = _caseService.GetCase(caseId).Result;
 
         var sumFacilityCost = SumAllCostFacility(caseId);
         var sumWellCost = SumWellCost(caseId);
@@ -118,7 +123,7 @@ public class GenerateStudyCostProfile
         {
             firstYearPercentage
         };
-        for (int i = dg2.Year + 1; i < dg3.Year; i++)
+        for (var i = dg2.Year + 1; i < dg3.Year; i++)
         {
             var days = DateTime.IsLeapYear(i) ? 366 : 365;
             var percentage = days / (double)totalDays;
@@ -131,7 +136,7 @@ public class GenerateStudyCostProfile
         var feasibilityAndConceptStudiesCost = new TimeSeries<double>
         {
             StartYear = dg2.Year - caseItem.DG4Date.Year,
-            Values = valuesList.ToArray()
+            Values = valuesList.ToArray(),
         };
 
         return feasibilityAndConceptStudiesCost;
@@ -139,14 +144,14 @@ public class GenerateStudyCostProfile
 
     public double SumAllCostFacility(Guid caseId)
     {
-        var caseItem = _caseService.GetCase(caseId);
+        var caseItem = _caseService.GetCase(caseId).Result;
 
         var sumFacilityCost = 0.0;
 
         Substructure substructure;
         try
         {
-            substructure = _substructureService.GetSubstructure(caseItem.SubstructureLink);
+            substructure = _substructureService.GetSubstructure(caseItem.SubstructureLink).Result;
             if (substructure.CostProfile != null)
             {
                 sumFacilityCost += substructure.CostProfile.Values.Sum();
@@ -154,13 +159,13 @@ public class GenerateStudyCostProfile
         }
         catch (ArgumentException)
         {
-            _logger.LogInformation("Substructure {0} not found.", caseItem.SubstructureLink);
+            _logger.LogInformation("Substructure {0} not found.", caseItem.SubstructureLink.ToString());
         }
 
         Surf surf;
         try
         {
-            surf = _surfService.GetSurf(caseItem.SurfLink);
+            surf = _surfService.GetSurf(caseItem.SurfLink).Result;
             if (surf.CostProfile != null)
             {
                 sumFacilityCost += surf.CostProfile.Values.Sum();
@@ -168,13 +173,13 @@ public class GenerateStudyCostProfile
         }
         catch (ArgumentException)
         {
-            _logger.LogInformation("Surf {0} not found.", caseItem.SurfLink);
+            _logger.LogInformation("Surf {0} not found.", caseItem.SurfLink.ToString());
         }
 
         Topside topside;
         try
         {
-            topside = _topsideService.GetTopside(caseItem.TopsideLink);
+            topside = _topsideService.GetTopside(caseItem.TopsideLink).Result;
             if (topside.CostProfile != null)
             {
                 sumFacilityCost += topside.CostProfile.Values.Sum();
@@ -182,13 +187,13 @@ public class GenerateStudyCostProfile
         }
         catch (ArgumentException)
         {
-            _logger.LogInformation("Topside {0} not found.", caseItem.TopsideLink);
+            _logger.LogInformation("Topside {0} not found", caseItem.TopsideLink.ToString());
         }
 
         Transport transport;
         try
         {
-            transport = _transportService.GetTransport(caseItem.TransportLink);
+            transport = _transportService.GetTransport(caseItem.TransportLink).Result;
             if (transport.CostProfile != null)
             {
                 sumFacilityCost += transport.CostProfile.Values.Sum();
@@ -196,7 +201,7 @@ public class GenerateStudyCostProfile
         }
         catch (ArgumentException)
         {
-            _logger.LogInformation("Transport {0} not found.", caseItem.TransportLink);
+            _logger.LogInformation("Transport {0} not found.", caseItem.TransportLink.ToString());
         }
 
         return sumFacilityCost;
@@ -204,14 +209,14 @@ public class GenerateStudyCostProfile
 
     public double SumWellCost(Guid caseId)
     {
-        var caseItem = _caseService.GetCase(caseId);
+        var caseItem = _caseService.GetCase(caseId).Result;
 
         var sumWellCost = 0.0;
 
         WellProject wellProject;
         try
         {
-            wellProject = _wellProjectService.GetWellProject(caseItem.WellProjectLink);
+            wellProject = _wellProjectService.GetWellProject(caseItem.WellProjectLink).Result;
 
             if (wellProject?.OilProducerCostProfile != null)
             {
@@ -232,7 +237,7 @@ public class GenerateStudyCostProfile
         }
         catch (ArgumentException)
         {
-            _logger.LogInformation("WellProject {0} not found.", caseItem.WellProjectLink);
+            _logger.LogInformation("WellProject {0} not found.", caseItem.WellProjectLink.ToString());
         }
 
         return sumWellCost;

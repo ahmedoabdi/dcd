@@ -63,7 +63,8 @@ public class TopsideServiceShould : IDisposable
         TopsideService topsideService = new TopsideService(fixture.context, projectService, loggerFactory);
 
         // Act
-        var projectResult = topsideService.CreateTopside(TopsideDtoAdapter.Convert(testTopside), caseId);
+        var projectResult = topsideService.CreateTopside(TopsideDtoAdapter.Convert(testTopside), caseId).GetAwaiter()
+            .GetResult();
 
         // Assert
         var retrievedTopside = projectResult.Topsides.FirstOrDefault(o => o.Name ==
@@ -86,7 +87,8 @@ public class TopsideServiceShould : IDisposable
         var expectedTopside = CreateTestTopside(new Project { Id = new Guid() });
 
         // Act, assert
-        Assert.Throws<NotFoundInDBException>(() => topsideService.CreateTopside(TopsideDtoAdapter.Convert(expectedTopside), caseId));
+        Assert.Throws<NotFoundInDBException>(() =>
+            topsideService.CreateTopside(TopsideDtoAdapter.Convert(expectedTopside), caseId).GetAwaiter().GetResult());
     }
 
     [Fact]
@@ -100,7 +102,9 @@ public class TopsideServiceShould : IDisposable
         var expectedTopside = CreateTestTopside(project);
 
         // Act, assert
-        Assert.Throws<NotFoundInDBException>(() => topsideService.CreateTopside(TopsideDtoAdapter.Convert(expectedTopside), new Guid()));
+        Assert.Throws<NotFoundInDBException>(() =>
+            topsideService.CreateTopside(TopsideDtoAdapter.Convert(expectedTopside), new Guid()).GetAwaiter()
+                .GetResult());
     }
 
     [Fact]
@@ -116,12 +120,12 @@ public class TopsideServiceShould : IDisposable
         fixture.context.Cases.Add(new Case
         {
             Project = project,
-            TopsideLink = topsideToDelete.Id
+            TopsideLink = topsideToDelete.Id,
         });
         fixture.context.SaveChanges();
 
         // Act
-        var projectResult = topsideService.DeleteTopside(topsideToDelete.Id);
+        var projectResult = topsideService.DeleteTopside(topsideToDelete.Id).GetAwaiter().GetResult();
 
         // Assert
         var actualTopside = projectResult.Topsides.FirstOrDefault(o => o.Name == topsideToDelete.Name);
@@ -146,7 +150,8 @@ public class TopsideServiceShould : IDisposable
         topsideService.DeleteTopside(topsideToDelete.Id);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => topsideService.DeleteTopside(topsideToDelete.Id));
+        Assert.Throws<ArgumentException>(
+            () => topsideService.DeleteTopside(topsideToDelete.Id).GetAwaiter().GetResult());
     }
 
     [Fact]
@@ -188,6 +193,7 @@ public class TopsideServiceShould : IDisposable
         // Act, assert
         Assert.Throws<ArgumentException>(() => topsideService.UpdateTopside(TopsideDtoAdapter.Convert(updatedTopside)));
     }
+
     private static Topside CreateTestTopside(Project project)
     {
         return new TopsideBuilder
@@ -199,19 +205,19 @@ public class TopsideServiceShould : IDisposable
             OilCapacity = 50e6,
             GasCapacity = 0,
             ArtificialLift = ArtificialLift.GasLift,
-            Maturity = Maturity.B
-        }.WithCostProfile(new TopsideCostProfile()
+            Maturity = Maturity.B,
+        }.WithCostProfile(new TopsideCostProfile
         {
             Currency = Currency.USD,
             StartYear = 2030,
-            Values = new double[] { 13.4, 18.9, 34.3 }
+            Values = new[] { 13.4, 18.9, 34.3 },
         })
-        .WithTopsideCessationCostProfile(new TopsideCessationCostProfile()
-        {
-            Currency = Currency.NOK,
-            StartYear = 2030,
-            Values = new double[] { 13.4, 183.9, 34.3 }
-        });
+            .WithTopsideCessationCostProfile(new TopsideCessationCostProfile
+            {
+                Currency = Currency.NOK,
+                StartYear = 2030,
+                Values = new[] { 13.4, 183.9, 34.3 },
+            });
     }
 
     private static Topside CreateUpdatedTopside(Project project, Topside oldTopside)
@@ -226,19 +232,19 @@ public class TopsideServiceShould : IDisposable
             OilCapacity = 52e6,
             GasCapacity = 7,
             ArtificialLift = ArtificialLift.NoArtificialLift,
-            Maturity = Maturity.C
-        }.WithCostProfile(new TopsideCostProfile()
+            Maturity = Maturity.C,
+        }.WithCostProfile(new TopsideCostProfile
         {
             Currency = Currency.NOK,
             StartYear = 2030,
-            Values = new double[] { 23.4, 283.9, 24.3 }
+            Values = new[] { 23.4, 283.9, 24.3 },
         })
-        .WithTopsideCessationCostProfile(new TopsideCessationCostProfile()
-        {
-            Currency = Currency.NOK,
-            StartYear = 2030,
-            Values = new double[] { 23.4, 283.9, 24.3 }
-        });
+            .WithTopsideCessationCostProfile(new TopsideCessationCostProfile
+            {
+                Currency = Currency.NOK,
+                StartYear = 2030,
+                Values = new[] { 23.4, 283.9, 24.3 },
+            });
     }
 
 }

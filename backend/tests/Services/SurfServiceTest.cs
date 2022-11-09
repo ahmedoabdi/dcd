@@ -68,7 +68,8 @@ public class SurfServiceTest
         var expectedSurf = CreateTestSurf(project);
 
         // Act
-        var projectResult = surfService.CreateSurf(SurfDtoAdapter.Convert(expectedSurf), caseId);
+        var projectResult = surfService.CreateSurf(SurfDtoAdapter.Convert(expectedSurf), caseId).GetAwaiter()
+            .GetResult();
 
         // Assert
         var actualSurf = SurfAdapter.Convert(projectResult.Surfs.FirstOrDefault(s => s.Name == expectedSurf.Name));
@@ -87,12 +88,12 @@ public class SurfServiceTest
         fixture.context.Cases.Add(new Case
         {
             Project = project,
-            SurfLink = testSurf.Id
+            SurfLink = testSurf.Id,
         });
         fixture.context.SaveChanges();
 
         // Act
-        var projectResult = surfService.DeleteSurf(testSurf.Id);
+        var projectResult = surfService.DeleteSurf(testSurf.Id).GetAwaiter().GetResult();
 
         // Assert
         var actualSurf = projectResult.Surfs.FirstOrDefault(s => s.Name == testSurf.Name);
@@ -128,7 +129,8 @@ public class SurfServiceTest
         var caseId = project.Cases.FirstOrDefault().Id;
         var testSurf = CreateTestSurf(new Project { Id = new Guid() });
         // Act, assert
-        Assert.Throws<NotFoundInDBException>(() => surfService.CreateSurf(SurfDtoAdapter.Convert(testSurf), caseId));
+        Assert.Throws<NotFoundInDBException>(() =>
+            surfService.CreateSurf(SurfDtoAdapter.Convert(testSurf), caseId).GetAwaiter().GetResult());
     }
 
     [Fact]
@@ -141,12 +143,13 @@ public class SurfServiceTest
         fixture.context.Cases.Add(new Case
         {
             Project = project,
-            SurfLink = testSurf.Id
+            SurfLink = testSurf.Id,
         });
         fixture.context.SaveChanges();
 
         // Act, assert
-        Assert.Throws<NotFoundInDBException>(() => surfService.CreateSurf(SurfDtoAdapter.Convert(testSurf), Guid.NewGuid()));
+        Assert.Throws<NotFoundInDBException>(() =>
+            surfService.CreateSurf(SurfDtoAdapter.Convert(testSurf), Guid.NewGuid()).GetAwaiter().GetResult());
     }
 
     [Fact]
@@ -159,10 +162,10 @@ public class SurfServiceTest
         var updatedSurf = SurfDtoAdapter.Convert(CreateUpdatedSurf(project, testSurf));
 
         // Act
-        surfService.DeleteSurf(updatedSurf.Id);
+        surfService.DeleteSurf(updatedSurf.Id).GetAwaiter();
 
         // Assert
-        Assert.Throws<ArgumentException>(() => surfService.UpdateSurf(updatedSurf));
+        Assert.Throws<AggregateException>(() => surfService.UpdateSurf(updatedSurf));
     }
 
     [Fact]
@@ -176,7 +179,7 @@ public class SurfServiceTest
         surfService.DeleteSurf(testSurf.Id);
 
         // Assert
-        Assert.Throws<ArgumentException>(() => surfService.DeleteSurf(testSurf.Id));
+        Assert.Throws<ArgumentException>(() => surfService.DeleteSurf(testSurf.Id).GetAwaiter().GetResult());
     }
 
 
@@ -184,6 +187,7 @@ public class SurfServiceTest
     {
         return new SurfBuilder
         {
+            Id = new Guid(),
             Name = "Surf Test",
             Project = project,
             ProjectId = project.Id,
@@ -199,13 +203,13 @@ public class SurfServiceTest
             .WithCostProfile(new SurfCostProfile
             {
                 StartYear = 2030,
-                Values = new double[] { 2.3, 3.3, 4.4 }
+                Values = new[] { 2.3, 3.3, 4.4 },
             }
             )
             .WithSurfCessationCostProfile(new SurfCessationCostProfile
             {
                 StartYear = 2030,
-                Values = new double[] { 4.2, 5.2, 6.2 }
+                Values = new[] { 4.2, 5.2, 6.2 },
             }
             );
     }
@@ -227,16 +231,16 @@ public class SurfServiceTest
             Maturity = Maturity.B,
             ProductionFlowline = ProductionFlowline.SSClad_Insulation,
         }
-            .WithCostProfile(new SurfCostProfile()
+            .WithCostProfile(new SurfCostProfile
             {
                 StartYear = 2031,
-                Values = new double[] { 5.5, 6.6, 7.7 }
+                Values = new[] { 5.5, 6.6, 7.7 },
             }
             )
-            .WithSurfCessationCostProfile(new SurfCessationCostProfile()
+            .WithSurfCessationCostProfile(new SurfCessationCostProfile
             {
                 StartYear = 2032,
-                Values = new double[] { 7.7, 8.8, 9.9 }
+                Values = new[] { 7.7, 8.8, 9.9 },
             }
             );
     }

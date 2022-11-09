@@ -32,10 +32,8 @@ public class WellProjectService
                 .Include(c => c.WellProjectWells!).ThenInclude(wpw => wpw.DrillingSchedule)
                 .Where(d => d.Project.Id.Equals(projectId));
         }
-        else
-        {
-            return new List<WellProject>();
-        }
+
+        return new List<WellProject>();
     }
 
     public WellProjectDto CopyWellProject(Guid wellProjectId, Guid sourceCaseId)
@@ -66,23 +64,23 @@ public class WellProjectService
         return dto;
     }
 
-    public ProjectDto CreateWellProject(WellProject wellProject, Guid sourceCaseId)
+    public async Task<ProjectDto> CreateWellProject(WellProject wellProject, Guid sourceCaseId)
     {
         var project = _projectService.GetProject(wellProject.ProjectId);
         wellProject.Project = project;
         _context.WellProjects!.Add(wellProject);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         SetCaseLink(wellProject, sourceCaseId, project);
         return _projectService.GetProjectDto(project.Id);
     }
 
-    public WellProject NewCreateWellProject(WellProjectDto wellProjectDto, Guid sourceCaseId)
+    public async Task<WellProject> NewCreateWellProject(WellProjectDto wellProjectDto, Guid sourceCaseId)
     {
         var wellProject = WellProjectAdapter.Convert(wellProjectDto);
         var project = _projectService.GetProject(wellProject.ProjectId);
         wellProject.Project = project;
         var createdWellProject = _context.WellProjects!.Add(wellProject);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         SetCaseLink(wellProject, sourceCaseId, project);
         return createdWellProject.Entity;
     }
@@ -92,27 +90,28 @@ public class WellProjectService
         var case_ = project.Cases!.FirstOrDefault(o => o.Id == sourceCaseId);
         if (case_ == null)
         {
-            throw new NotFoundInDBException(string.Format("Case {0} not found in database.", sourceCaseId));
+            throw new NotFoundInDBException($"Case {sourceCaseId} not found in database.");
         }
+
         case_.WellProjectLink = wellProject.Id;
         _context.SaveChanges();
     }
 
-    public ProjectDto DeleteWellProject(Guid wellProjectId)
+    public async Task<ProjectDto> DeleteWellProject(Guid wellProjectId)
     {
         _logger.LogWarning("An example of a Warning trace..");
         _logger.LogError("An example of an Error level message");
 
-        var wellProject = GetWellProject(wellProjectId);
+        var wellProject = await GetWellProject(wellProjectId);
         _context.WellProjects!.Remove(wellProject);
         DeleteCaseLinks(wellProjectId);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
         return _projectService.GetProjectDto(wellProject.ProjectId);
     }
 
     private void DeleteCaseLinks(Guid wellProjectId)
     {
-        foreach (Case c in _context.Cases!)
+        foreach (var c in _context.Cases!)
         {
             if (c.WellProjectLink == wellProjectId)
             {
@@ -123,7 +122,7 @@ public class WellProjectService
 
     public ProjectDto UpdateWellProject(WellProjectDto updatedWellProject)
     {
-        var existing = GetWellProject(updatedWellProject.Id);
+        var existing = GetWellProject(updatedWellProject.Id).Result;
         WellProjectAdapter.ConvertExisting(existing, updatedWellProject);
 
         _context.WellProjects!.Update(existing);
@@ -133,7 +132,7 @@ public class WellProjectService
 
     public WellProjectDto NewUpdateWellProject(WellProjectDto updatedWellProjectDto)
     {
-        var existing = GetWellProject(updatedWellProjectDto.Id);
+        var existing = GetWellProject(updatedWellProjectDto.Id).Result;
         WellProjectAdapter.ConvertExisting(existing, updatedWellProjectDto);
 
         var updatedWellProject = _context.WellProjects!.Update(existing);
@@ -162,16 +161,16 @@ public class WellProjectService
         return WellProjectDtoAdapter.Convert(wellProject.Entity);
     }
 
-    public WellProject GetWellProject(Guid wellProjectId)
+    public async Task<WellProject> GetWellProject(Guid wellProjectId)
     {
-        var wellProject = _context.WellProjects!
+        var wellProject = await _context.WellProjects!
             .Include(c => c.OilProducerCostProfile)
             .Include(c => c.GasProducerCostProfile)
             .Include(c => c.WaterInjectorCostProfile)
             .Include(c => c.GasInjectorCostProfile)
             .Include(c => c.WellProjectWells!).ThenInclude(wpw => wpw.DrillingSchedule)
             .Include(c => c.WellProjectWells!).ThenInclude(wpw => wpw.Well)
-            .FirstOrDefault(o => o.Id == wellProjectId);
+            .FirstOrDefaultAsync(o => o.Id == wellProjectId);
         if (wellProject == null)
         {
             throw new ArgumentException(string.Format("Well project {0} not found.", wellProjectId));
